@@ -1,7 +1,5 @@
-FROM openjdk:8-jdk-alpine
-
+FROM openjdk:21-jdk-alpine
 VOLUME /tmp
-
-COPY target/spring-boot-todo-backend-1.0.jar app.jar
-
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} app.jar
 ENTRYPOINT ["java","-jar", "/app.jar"]

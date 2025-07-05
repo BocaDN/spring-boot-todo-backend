@@ -1,68 +1,62 @@
 pipeline {
-  agent any
-  stages {
-    stage('Log Tool Version') {
-      parallel {
-        stage('Log Tool Version') {
-          steps {
-            bat '''mvn --version
-            git --version
-            java -version'''
-          }
-        }
+    agent any
 
-        stage('Check for POM') {
-          steps {
-            fileExists 'pom.xml'
-          }
-        }
-
-      }
+    environment {
+        DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials')
+        IMAGE_NAME = 'bocadn/spring-boot-todo-backend'
     }
 
-    stage('Build with Maven') {
-      steps {
-        sh 'mvn compile'
-      }
-    }
-
-    stage('Run Tests') {
-      steps {
-        sh 'mvn compile'
-      }
-    }
-
-    stage('Run Static Code Analysis') {
-      steps {
-        build job: static-code-analysis}
-      }
-    }
-
-  
-
-    stage('Build Docker Image') {
-      steps {
-        build job: static-code-analysis
-      }
-    }
-
-    stage('Create Executable JAR File') {
-      steps {
-        sh 'mvn package spring-boot:repackage'
-      }
-    }  
-
-    stage('Build Docker IMage') {
-      steps {
-        sh 'sudo docker build -t bocadn/spring-boot-todo-backend .'
-      }
-    }   
-
-    stage('Software Versions') {
+    stages {
+        stage('Clone from GitHub') {
             steps {
-                       sh "docker push bocadn/spring-boot-todo-backend:first"
-                    
-                }
+                echo "Cloning repository from GitHub..."
+                // Replace with your GitHub repo URL and credentials if private
+                git url: 'https://github.com/BocaDN/spring-boot-todo-backend.git', branch: 'main'
             }
-       } 
+        }
+
+        stage('Compile and Test') {
+            steps {
+                echo "Compiling and testing..."
+                sh './mvnw clean test'
+            }
+        }
+
+        stage('Build Spring Boot JAR File') {
+            steps {
+                echo "Building JAR..."
+                sh './mvnw package -DskipTests'
+            }
+        }
+
+        stage('Create Docker Image') {
+            steps {
+                echo "Building Docker image..."
+                sh "docker build -t ${IMAGE_NAME}:latest ."
+            }
+        }
+
+        stage('Deploy to DockerHub') {
+            steps {
+                echo "Logging in and pushing Docker image..."
+                sh """
+                    echo ${DOCKER_HUB_CREDENTIALS_PSW} | docker login -u ${DOCKER_HUB_CREDENTIALS_USR} --password-stdin
+                    docker push ${IMAGE_NAME}:latest
+                """
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Cleaning up Docker..."
+            sh 'docker logout'
+        }
+        success {
+            echo "Pipeline finished successfully!"
+        }
+        failure {
+            echo "Pipeline failed."
+        }
+    }
 }
