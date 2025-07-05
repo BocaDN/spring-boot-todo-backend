@@ -18,14 +18,14 @@ pipeline {
         stage('Compile and Test') {
             steps {
                 echo "Compiling and testing..."
-                sh './mvnw clean test'
+                sh 'mvn clean test'
             }
         }
 
         stage('Build Spring Boot JAR File') {
             steps {
                 echo "Building JAR..."
-                sh './mvnw package -DskipTests'
+                sh 'mvn package -DskipTests'
             }
         }
 
