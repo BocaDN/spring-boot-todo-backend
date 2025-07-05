@@ -38,11 +38,17 @@ pipeline {
 
         stage('Deploy to DockerHub') {
             steps {
-                echo "Logging in and pushing Docker image..."
-                sh """
-                    echo ${DOCKER_HUB_CREDENTIALS_PSW} | docker login -u ${DOCKER_HUB_CREDENTIALS_USR} --password-stdin
-                    docker push ${IMAGE_NAME}:latest
-                """
+                script{
+                     withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', 
+                               usernameVariable: 'USERNAME', 
+                               passwordVariable: 'PASSWORD')]) {
+
+                     echo "Logging in and pushing Docker image..."
+                     sh "echo $PASSWORD | docker login --username $USERNAME --password-stdin"
+                     sh "docker push ${IMAGE_NAME}:latest"
+
+                    }
+                }
             }
         }
     }
