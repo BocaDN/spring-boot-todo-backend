@@ -8,6 +8,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Document(collection = "todos")
 @Getter
 @Setter
@@ -17,7 +19,8 @@ import java.time.Instant;
 public class Todo {
 
     @Id
-    private String _id;
+    @JsonProperty("_id")
+    private String id;
 
     private String title;
 
