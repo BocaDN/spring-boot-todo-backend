@@ -2,6 +2,7 @@ package com.example.todo.controller;
 
 import com.example.todo.dto.*;
 import com.example.todo.model.Todo;
+import com.example.todo.model.TodoStatus;
 import com.example.todo.service.TodoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -24,6 +25,17 @@ public class TodoController {
 
   public TodoController(TodoService todoService) {
     this.todoService = todoService;
+  }
+
+  @GetMapping("/test")
+  public ResponseEntity<Todo> getTestTodo() {
+    Todo todo = Todo.builder()
+        .id("abc123")
+        .title("Test Todo")
+        .description("This is a test")
+        .status(TodoStatus.TODO)
+        .build();
+    return ResponseEntity.ok(todo);
   }
 
   @Operation(summary = "Get all todos")
