@@ -1,6 +1,8 @@
 package com.example.todo.dto;
 
 import com.example.todo.model.TodoStatus;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,6 +15,7 @@ public class CreateTodoResponseDto {
     @Schema(description = "MongoDB ObjectId of the todo item", example = "507f1f77bcf86cd799439011")
     @NotBlank
     @Pattern(regexp = "^[a-fA-F0-9]{24}$", message = "Invalid MongoDB ObjectId")
+    @JsonProperty("_id")
     private String id;
 
     @Schema(description = "Title of the todo item")
