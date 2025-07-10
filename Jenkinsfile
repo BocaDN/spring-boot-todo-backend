@@ -10,7 +10,6 @@ pipeline {
         stage('Clone from GitHub') {
             steps {
                 echo "Cloning repository from GitHub..."
-                // Replace with your GitHub repo URL and credentials if private
                 git url: 'https://github.com/BocaDN/spring-boot-todo-backend.git', branch: 'main'
             }
         }
